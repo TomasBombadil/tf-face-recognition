@@ -1,6 +1,11 @@
 .idea/
 conda_venv/
+search-engines/other/
+search-engines/images/
+search-engines/chromedriver
 
+__pycache__/
+.DS_Store
 # Rope project settings
 .ropeproject
 
