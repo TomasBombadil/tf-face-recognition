@@ -1,36 +1,46 @@
 import json
 from time import time
+import base64
 
 from PIL import Image
-from flask import Flask, request, Response
+from flask import Flask, request, Response, send_file
+
+from tensorface import detection
+from tensorface.recognition import recognize, learn_from_examples
 
 # assuming that script is run from `server` dir
 import sys, os
 sys.path.append(os.path.realpath('..'))
 
-from tensorface import detection
-from tensorface.recognition import recognize, learn_from_examples
 
 # For test examples acquisition
 SAVE_DETECT_FILES = False
 SAVE_TRAIN_FILES = False
+PORT = 5000
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 
+def get_script_path():
+    return os.path.dirname(os.path.realpath(sys.argv[0]))
+
 # for CORS
 @app.after_request
 def after_request(response):
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,POST')  # Put any other methods you need here
+    #response.headers.add('Access-Control-Allow-Origin', '*')
+    #response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    #response.headers.add('Access-Control-Allow-Methods', 'GET,POST')  # Put any other methods you need here
     return response
 
 
 @app.route('/')
 def index():
-    return Response(open('./static/detect.html').read(), mimetype="text/html")
+    indexPath = 'static/index.html' #get_script_path() + '/static/index.html'
+    html = Response(open(indexPath).read(), mimetype="text/html")
+    print("html:")
+    print(html)
+    return html
 
 
 @app.route('/detect', methods=['POST'])
@@ -74,8 +84,10 @@ def detect():
 def train():
     try:
         # image with sprites
-        image_stream = request.files['image']  # get the image
-        image_sprite = Image.open(image_stream)
+        #image_stream = request.files['image']  # get the image
+        #image_sprite = Image.open(image_stream)
+        '''
+        image_sprite = Image.open(filepath)
 
         # forms data
         name = request.form.get('name')
@@ -87,15 +99,24 @@ def train():
             image_sprite.save('train_{}_{}_{}.png'.format(name, size, num))
 
         info = learn_from_examples(name, image_sprite, num, size)
-        return json.dumps([{'name': n, 'train_examples': s} for n, s in info.items()])
+        #return json.dumps([{'name': n, 'train_examples': s} for n, s in info.items()])
+        '''
+        filepath = "./images/to-recognize/Antonio-Banderas-1.jpg"
+        with open(filepath, "rb") as imageFile:
+            imgB64 = base64.b64encode(imageFile.read())
 
-    except Exception as e:
+        return send_file(imgB64.decode("utf-8") , mimetype='image/jpeg')
+
+    except Exception as x:
         import traceback
         traceback.print_exc()
         print('POST /image error: %e' % e)
         return e
 
 
-if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', ssl_context='adhoc')
+'''if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=PORT, debug=True) 
+    start_debugger()
+    #, ssl_context='adhoc')
     # app.run(host='0.0.0.0')
+'''

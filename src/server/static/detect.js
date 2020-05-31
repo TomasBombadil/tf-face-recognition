@@ -47,7 +47,6 @@ function uploadScale() {
     return v.videoWidth > 0 ? uploadWidth / v.videoWidth : 0;
 }
 
-
 //draw boxes and labels on each detected object
 function drawBoxes(objects) {
 
@@ -99,12 +98,11 @@ function drawBoxes(objects) {
                 stopCaptureExamples();
             }
         }
-
     });
 }
 
 //Add file blob to a form and post
-function postFile(file) {
+/*function postFile(file) {
 
     //Set options as form data
     let formdata = new FormData();
@@ -129,29 +127,50 @@ function postFile(file) {
         }
     };
     xhr.send(formdata);
+} */
+
+
+function postFile(file) {
+    //Set options as form data
+    let formdata = new FormData();
+    formdata.append("image", file);
+    formdata.append("threshold", scoreThreshold);
+
+         //draw the boxes
+         drawBoxes(objects);
+
+         //Save and send the next image
+         imageCtx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, 0, 0, uploadWidth, uploadWidth * (v.videoHeight / v.videoWidth));
+         imageCanvas.toBlob(postFile, 'image/jpeg');
+    xhr.send(formdata);
 }
 
 function postExamplesFile(file) {
+    
     //Set options as form data
     let formdata = new FormData();
+
+
     formdata.append("image", file);
     formdata.append("num", examplesNum);
     formdata.append("size", exampleSize);
     name = document.getElementById('inputName').value;
     formdata.append("name", name);
 
-
     let xhr = new XMLHttpRequest();
     xhr.open('POST', updateUrl, true);
     xhr.onload = function () {
         if (this.status === 200) {
-            let objects = JSON.parse(this.response);
-            console.log(objects);
-            alert(
+            console.log(this.response)
+            let objects = this.response //JSON.parse(this.response);
+            
+            //console.log(objects);
+            /*alert(
             'Model updated with person: ' + name + ' \n' +
             'Now model have examples for: \n\n' +
             objects.map( i => '' + i.name + ' - train examples: ' + i.train_examples ).join('\n\n')
-            )
+            ) */
+
         }
         else {
             console.error(xhr);
@@ -181,8 +200,8 @@ function startObjectDetection() {
     //Save and send the first image
     imageCtx.drawImage(v, 0, 0, v.videoWidth, v.videoHeight, 0, 0, uploadWidth, uploadWidth * (v.videoHeight / v.videoWidth));
     imageCanvas.toBlob(postFile, 'image/jpeg');
-
 }
+
 
 //Capture examples for training
 function captureExamples() {
@@ -193,7 +212,6 @@ function captureExamples() {
     examplesNum = 0;
     exCtx.clearRect(0, 0, exCanvas.width, exCanvas.height);
     document.getElementById('updateModel').hidden = true;
-
 }
 
 function stopCaptureExamples() {

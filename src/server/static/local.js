@@ -12,7 +12,7 @@ const constraints = {
     }
 };
 
-navigator.mediaDevices.getUserMedia(constraints)
+/*navigator.mediaDevices.getUserMedia(constraints)
     .then(stream => {
         document.getElementById("myVideo").srcObject = stream;
         console.log("Got local user video");
@@ -20,4 +20,4 @@ navigator.mediaDevices.getUserMedia(constraints)
     })
     .catch(err => {
         console.log('navigator.getUserMedia error: ', err)
-    });
+    }); */

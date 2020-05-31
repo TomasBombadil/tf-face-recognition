@@ -6,15 +6,15 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 import json
+import sys
 import os
 from pathlib import Path
 import urllib3
 import argparse
 import urllib.request
 
-
 print("define program variables and open google images...")
-searchterm = 'celebrity faces' # will also be the name of the folder
+searchterm = 'banderas' # will also be the name of the folder
 url = "https://www.google.co.in/search?q="+searchterm+"&source=lnms&tbm=isch"
 
 chrome_options = Options()
@@ -23,9 +23,11 @@ chrome_options = Options()
 #chrome_options.add_argument("--no-sandbox") # linux only
 chrome_options.add_argument("--headless")
 
+def get_script_path():
+    return os.path.dirname(os.path.realpath(sys.argv[0]))
 
 def getImagesFromGoogle(searchterm):
-    browser = webdriver.Chrome('./chromedriver', options=chrome_options)
+    browser = webdriver.Chrome(get_script_path() + '/chromedriver', options=chrome_options)
     browser.get(url)
     header={'User-Agent':"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36"}
 
@@ -37,7 +39,7 @@ def getImagesFromGoogle(searchterm):
     for _ in range(500):
         browser.execute_script("window.scrollBy(0,10000)")
 
-    path = './images/'
+    path = get_script_path() + '/../images/search-in/'
     Path(path).mkdir(parents=True, exist_ok=True)
 
     print("start scraping ...")
@@ -60,6 +62,5 @@ def getImagesFromGoogle(searchterm):
 
     print(succounter, "pictures succesfully downloaded")
     browser.close()
-
 
 getImagesFromGoogle(searchterm)
