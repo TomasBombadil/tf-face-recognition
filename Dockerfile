@@ -17,13 +17,11 @@ RUN pip install --upgrade pip
 COPY docker/requirements.txt /server-requirements.txt
 RUN pip install -r /server-requirements.txt
 
-RUN mkdir /root/pretrained_models
-COPY docker/download.py /root/pretrained_models/
-COPY docker/download_vggace2.py /root/pretrained_models/
-WORKDIR /root/pretrained_models
-RUN python download.py
-RUN python download_vggace2.py
+COPY pretrained_models/ /workspace/pretrained_models/
+WORKDIR /workspace/pretrained_models/
+RUN python /workspace/pretrained_models/download.py
 RUN ls -l
+RUN pip install -U --pre ptvsd
 
 COPY ./src/ /workspace
 WORKDIR /workspace/
@@ -35,7 +33,6 @@ ENV LANG C.UTF-8
 ###########START NEW IMAGE : DEBUGGER ###################
 FROM base as debug
 ENV FLASK_ENV=development
-RUN pip install -U --pre ptvsd
 
 #CMD python -m ptvsd --host 0.0.0.0 --port 5678 --wait --multiprocess -m flask run -h 0.0.0 -p 5000
 CMD python -m ptvsd --host 0.0.0.0 --port 5678 --wait -m flask run -h 0.0.0 -p 5000

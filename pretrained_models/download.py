@@ -1,6 +1,7 @@
 import requests
+from pathlib import Path
 import zipfile
-import os
+import os, sys
 
 model_dict = {
     'lfw-subset': '1B5BQUZuJO-paxdN8UclxeHAR1WnR_Tzi',
@@ -10,16 +11,21 @@ model_dict = {
     '20180402-114759': '1EXPBSXwTaqrSC0OhUdXNmKSh9qJUQ55-'
 }
 
+def get_script_path():
+    return os.path.dirname(os.path.realpath(sys.argv[0]))
 
 def download_and_extract_file(model_name, data_dir):
     file_id = model_dict[model_name]
-    destination = os.path.join(data_dir, model_name + '.zip')
+    destination = os.path.join(data_dir, model_name)
     if not os.path.exists(destination):
+        destination = destination + '.zip'
         print('Downloading file to %s' % destination)
         download_file_from_google_drive(file_id, destination)
         with zipfile.ZipFile(destination, 'r') as zip_ref:
             print('Extracting file to %s' % data_dir)
             zip_ref.extractall(data_dir)
+    else:
+        print("%s present" % destination)
 
 
 def download_file_from_google_drive(file_id, destination):
@@ -53,7 +59,28 @@ def save_response_content(response, destination):
             if chunk:  # filter out keep-alive new chunks
                 f.write(chunk)
 
+if __name__ == '__main__':
 
-# download VGGFace2
-download_and_extract_file('20180402-114759', '.')
+    print("Downloading pretrained model for MTCNN...")
 
+    for i in range(1, 4):
+        f_name = get_script_path() + '/det{}.npy'.format(i)
+        f_path = Path(f_name)
+        
+        if f_path.is_file():
+            print("%s present" % f_name)
+        else:
+            print("Downloading: ", f_name)
+            url = "https://github.com/davidsandberg/facenet/raw/" \
+                "e9d4e8eca95829e5607236fa30a0556b40813f62/src/align/det{}.npy".format(i)
+            session = requests.Session()
+            response = session.get(url, stream=True)
+
+            CHUNK_SIZE = 32768
+
+            with open(f_name, "wb") as f:
+                for chunk in response.iter_content(CHUNK_SIZE):
+                    if chunk:  # filter out keep-alive new chunks
+                        f.write(chunk)
+
+    download_and_extract_file('20180402-114759', get_script_path())

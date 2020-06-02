@@ -26,7 +26,7 @@ chrome_options.add_argument("--headless")
 def get_script_path():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
 
-def getImagesFromGoogle(searchterm):
+def getImagesFromGoogle(searchterm, dstDir):
     browser = webdriver.Chrome(get_script_path() + '/chromedriver', options=chrome_options)
     browser.get(url)
     header={'User-Agent':"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.134 Safari/537.36"}
@@ -39,8 +39,7 @@ def getImagesFromGoogle(searchterm):
     for _ in range(500):
         browser.execute_script("window.scrollBy(0,10000)")
 
-    path = get_script_path() + '/../images/search-in/'
-    Path(path).mkdir(parents=True, exist_ok=True)
+    Path(dstDir).mkdir(parents=True, exist_ok=True)
 
     print("start scraping ...")
     for x in browser.find_elements_by_xpath('//img[contains(@class,"rg_i Q4LuWd tx8vtf")]'):
@@ -53,7 +52,7 @@ def getImagesFromGoogle(searchterm):
         new_filename = "image"+str(counter)+".jpg"
 
         try:
-            file_path = path
+            file_path = dstDir
             file_path += new_filename
             urllib.request.urlretrieve(img, file_path)
             succounter += 1
@@ -63,4 +62,4 @@ def getImagesFromGoogle(searchterm):
     print(succounter, "pictures succesfully downloaded")
     browser.close()
 
-getImagesFromGoogle(searchterm)
+#getImagesFromGoogle(searchterm)

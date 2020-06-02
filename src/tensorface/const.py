@@ -9,8 +9,8 @@ FACE_PIC_SIZE = 160
 
 EMBEDDING_SIZE = 512
 
-PRETREINED_MODEL_DIR = os.path.join(str(Path.home()), 'pretrained_models')
+#PRETREINED_MODEL_DIR = os.path.join(str(Path.home()), 'pretrained_models')
 
-#PRETREINED_MODEL_DIR = get_script_path() + "/pretrained_models"
+PRETREINED_MODEL_DIR = "/workspace/pretrained_models"
 
 UNKNOWN_CLASS = "unknown"
