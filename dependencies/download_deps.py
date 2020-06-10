@@ -10,6 +10,15 @@ model_dict = {
     '20170512-110547': '0B5MzpY9kBtDVZ2RpVDYwWmxoSUk',
     '20180402-114759': '1EXPBSXwTaqrSC0OhUdXNmKSh9qJUQ55-'
 }
+CHUNK_SIZE = 32768
+
+model_folder = "./pretrained_models/"
+searchengine_folder = "./searchengines/"
+
+if not os.path.exists(model_folder):
+    os.makedirs(model_folder)
+if not os.path.exists(searchengine_folder):
+    os.makedirs(searchengine_folder)
 
 def get_script_path():
     return os.path.dirname(os.path.realpath(sys.argv[0]))
@@ -50,7 +59,6 @@ def get_confirm_token(response):
 
     return None
 
-
 def save_response_content(response, destination):
     CHUNK_SIZE = 32768
 
@@ -64,7 +72,7 @@ if __name__ == '__main__':
     print("Downloading pretrained model for MTCNN...")
 
     for i in range(1, 4):
-        f_name = get_script_path() + '/det{}.npy'.format(i)
+        f_name = model_folder + '/det{}.npy'.format(i)
         f_path = Path(f_name)
         
         if f_path.is_file():
@@ -76,11 +84,29 @@ if __name__ == '__main__':
             session = requests.Session()
             response = session.get(url, stream=True)
 
-            CHUNK_SIZE = 32768
-
             with open(f_name, "wb") as f:
                 for chunk in response.iter_content(CHUNK_SIZE):
                     if chunk:  # filter out keep-alive new chunks
                         f.write(chunk)
 
-    download_and_extract_file('20180402-114759', get_script_path())
+    download_and_extract_file('20180402-114759', model_folder)
+
+    # Download chromedriver
+    dataDir = searchengine_folder 
+    filename = dataDir + "/chromedriver_linux64"
+    f_path = Path(filename)
+    if f_path.is_file():
+            print("%s present" % filename)
+    else:
+        print("Downloading chromedriver")
+        url = "https://chromedriver.storage.googleapis.com/81.0.4044.138/chromedriver_linux64.zip"
+        session = requests.Session()
+        response = session.get(url, stream=True)
+        with open(filename + ".zip", "wb") as f:
+                for chunk in response.iter_content(CHUNK_SIZE):
+                    if chunk:  # filter out keep-alive new chunks
+                        f.write(chunk)
+        zippedFile = dataDir + "chromedriver_linux64.zip"       
+        with zipfile.ZipFile(zippedFile, 'r') as zip_ref:
+            print('Extracting file to %s' % dataDir)
+            zip_ref.extractall(dataDir)

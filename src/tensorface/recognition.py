@@ -1,5 +1,6 @@
 from typing import List
 
+import os
 import numpy as np
 from PIL import Image
 
@@ -7,8 +8,13 @@ from tensorface import classifier
 from tensorface.const import FACE_PIC_SIZE, EMBEDDING_SIZE
 from tensorface.detection import img_to_np
 from tensorface.embedding import embedding
+
 from tensorface.model import Face
 
+#from tensorface.embedding import load_model
+#from tensorface.const import PRETREINED_MODEL_DIR
+
+#MODEL_FILE_NAME = '20180402-114759/20180402-114759.pb'
 
 def recognize(faces) -> List[Face]:
     X = np.zeros((len(faces), EMBEDDING_SIZE), np.float32)
@@ -18,7 +24,9 @@ def recognize(faces) -> List[Face]:
 
         X[i, :] = embedding(img_to_np(img))
 
+    #load_model(os.path.join(PRETREINED_MODEL_DIR, MODEL_FILE_NAME))
     result = classifier.predict(X)
+ 
     for f, r in zip(faces, result):
         n, prob, c_list, c_prob = r
         f.name = n
@@ -33,15 +41,17 @@ def learn_from_examples(name, image_sprite, num, size):
 
     print("Adding new training data for: ", name, "...")
 
+    ''' 
     # update classifier
     faces = []
     for i in range(int(num)):
-        faces.append(image_sprite.crop((
-            size * i,
-            0,
-            size * (i + 1),
-            size
-        )))
+       # faces.append(image_sprite.crop((
+        #    size * i,
+        #   0,
+        #    size * (i + 1),
+        #   size
+        #)))
+        faces.append(image_sprite)
 
     # do embedding for all faces
     X = np.zeros((num, EMBEDDING_SIZE), np.float32)
@@ -49,6 +59,9 @@ def learn_from_examples(name, image_sprite, num, size):
         X[i, :] = embedding(img_to_np(f))
 
     # all example cames from single person
+    '''
+    X = np.zeros((num, EMBEDDING_SIZE), np.float32)
+    X[0,:] = embedding(img_to_np(image_sprite))
     y = [name] * num
 
     # do the actual update

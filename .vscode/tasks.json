@@ -13,6 +13,14 @@
 			}
 		},
 		{
+			"type": "shell",
+			"label": "compose-up",
+			"command": "docker-compose -f docker-compose.yml up -d --build",
+			"presentation": {
+			  "reveal": "always"
+			}
+		  },
+		{
 			"type": "docker-run",
 			"label": "docker-run: debug",
 			"dependsOn": [

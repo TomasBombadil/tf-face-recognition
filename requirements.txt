@@ -74,5 +74,5 @@ testpath==0.3.1
 urllib3==1.25.9
 wcwidth==0.1.7
 webencodings==0.5.1
-#Werkzeug==1.0.1
+Werkzeug==1.0.1
 #widgetsnbextension==3.1.4
