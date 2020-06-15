@@ -17,17 +17,17 @@ sess = None
 def load_model(pb_file, input_map=None):
     global _tf
     global sess
-    if sess is None:
+    #if sess is None:
+    if True:
         sess = _tf.Session()
         print('Model filename: %s' % pb_file)
         with gfile.FastGFile(pb_file, 'rb') as f:
             graph_def = _tf.GraphDef()
             graph_def.ParseFromString(f.read())
             _tf.import_graph_def(graph_def, input_map=input_map, name='')
+            pass
 
-
-load_model(os.path.join(PRETREINED_MODEL_DIR, MODEL_FILE_NAME))
-
+#load_model(os.path.join(PRETREINED_MODEL_DIR, MODEL_FILE_NAME))
 
 # inception net requires this
 def prewhiten(x):
@@ -39,7 +39,8 @@ def prewhiten(x):
 
 
 def embedding(face_np):
-    global sess
+    load_model(os.path.join(PRETREINED_MODEL_DIR, MODEL_FILE_NAME))
+    #global sess
     images_placeholder = tf.get_default_graph().get_tensor_by_name("input:0")
     embeddings = tf.get_default_graph().get_tensor_by_name("embeddings:0")
     phase_train_placeholder = tf.get_default_graph().get_tensor_by_name("phase_train:0")

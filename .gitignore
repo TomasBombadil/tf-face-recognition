@@ -1,8 +1,11 @@
 .idea/
 conda_venv/
-search-engines/other/
-search-engines/images/
-search-engines/chromedriver
+dependendencies/*
+!dependendencies/download_deps.py
+
+src/searchengines/other/
+src/searchengines/chromedriver
+src/images
 
 __pycache__/
 .DS_Store

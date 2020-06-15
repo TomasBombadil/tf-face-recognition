@@ -1,0 +1,17 @@
+version: "3.4"
+services:
+    facenet-search:
+        build:
+            context: .
+            target: debug
+        #working_dir: /workdir      #comment out for build.target:prod
+        #entrypoint: /bin/sh     #comment out for build.target:prod
+        #stdin_open: true        #comment out for build.target:prod
+        #tty: true               #comment out for build.target:prod
+        container_name: facenet-search
+        volumes:
+        - ./src:/workdir:rw
+        ports:
+        - 5003:5000
+        - 5678:5678
+
